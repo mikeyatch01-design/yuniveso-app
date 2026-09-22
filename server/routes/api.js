@@ -145,9 +145,12 @@ router.get('/audits/:id', async (req, res) => {
     SELECT a.*, c.name client_name FROM audits a JOIN clients c ON c.id=a.client_id WHERE a.id=?`, [auditId]);
   const [team] = await pool.query(`
     SELECT u.id, u.name, u.initials FROM audit_team t JOIN users u ON u.id=t.user_id WHERE t.audit_id=?`, [auditId]);
+  // Both 'evidence' (staff-requested) and 'bank_statement' (client-uploaded)
+  // show up here — this is the only place staff can see what a client has
+  // actually submitted, so excluding either category would hide real work.
   const [documents] = await pool.query(
     `SELECT id, category, requested_from, original_filename, status, due_date, size_bytes, created_at
-     FROM documents WHERE audit_id=? AND category='evidence' ORDER BY created_at DESC`, [auditId]);
+     FROM documents WHERE audit_id=? AND category IN ('evidence','bank_statement') ORDER BY created_at DESC`, [auditId]);
   const [procedures] = await pool.query(`
     SELECT p.*, u.name assigned_name, u.initials assigned_initials
     FROM testing_procedures p LEFT JOIN users u ON u.id=p.assigned_to WHERE p.audit_id=?`, [auditId]);

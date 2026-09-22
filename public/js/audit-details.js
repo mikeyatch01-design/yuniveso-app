@@ -39,10 +39,11 @@
     document.getElementById('evidenceTableBody').innerHTML = documents.length ? documents.map(d => `
       <tr>
         <td>${d.status === 'Awaiting' ? escapeHtml(d.original_filename) : `<a href="/api/documents/${d.id}/download">${escapeHtml(d.original_filename)}</a>`}</td>
+        <td>${badge(d.category === 'bank_statement' ? 'Client upload' : 'Internal', d.category === 'bank_statement' ? 'badge-info' : 'badge-muted')}</td>
         <td>${escapeHtml(d.requested_from || '—')}</td>
         <td>${d.status === 'Awaiting' ? '<span class="badge badge-warning">Awaiting</span>' : statusBadge(d.status)}</td>
       </tr>
-    `).join('') : `<tr><td colspan="3" class="cell-sub">No evidence requested yet.</td></tr>`;
+    `).join('') : `<tr><td colspan="4" class="cell-sub">No evidence requested yet.</td></tr>`;
 
     document.getElementById('procedureCountBadge').textContent =
       `${procedures.filter(p => p.result !== 'In progress').length} of ${procedures.length} complete`;
