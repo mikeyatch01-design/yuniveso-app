@@ -59,8 +59,8 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;margin:0;color:var(--text);letter-s
 .brand-mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--blue),#5B8DEF);flex:0 0 30px}
 
 /* ---------- Theme toggle (replaces the decorative brand-mark icon) ---------- */
-.theme-toggle-btn{width:30px;height:30px;border-radius:7px;border:1px solid #2A3242;background:#1B2130;color:#C7CCD8;display:flex;align-items:center;justify-content:center;flex:0 0 30px;cursor:pointer;padding:0}
-.theme-toggle-btn:hover{background:#232B3D;color:#fff}
+.theme-toggle-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;flex:0 0 36px;cursor:pointer;padding:0}
+.theme-toggle-btn:hover{background:var(--bg);color:var(--text)}
 .theme-toggle-btn svg{width:16px;height:16px}
 .theme-toggle-btn .icon-moon{display:none}
 :root[data-theme="dark"] .theme-toggle-btn .icon-sun{display:none}
