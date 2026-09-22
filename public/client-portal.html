@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client Portal — Audit Status</title>
+<link rel="stylesheet" href="theme.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0}
+  a{color:#2456C7;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app-shell" style="width:1440px;height:1024px;">
+
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-name">YUNIVESO</div>
+        <div class="brand-sub">Client Portal</div>
+      </div>
+    </div>
+    <div class="nav-scroll">
+      <div class="nav-section-title">Kesteven Manufacturing</div>
+      <a class="nav-item active" href="client-portal.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>Overview</a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.7"/></svg>Documents<span class="nav-badge">3</span></a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19V9m6 10V4m6 15v-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Reports<span class="nav-badge">2</span></a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3 3 20h18L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Findings</a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Messages<span class="nav-badge">2</span></a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M4 9h16M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Audit Timeline</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="avatar avatar-sm" style="background:#2A3242;color:#fff;" data-user-initials>EW</div>
+      <div style="min-width:0;">
+        <div style="font-size:13px;color:#fff;font-weight:600;white-space:nowrap;" data-user-name>Elena Wren</div>
+        <div style="font-size:11.5px;color:#7C8598;">Finance Director</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Kesteven Manufacturing / <b>Overview</b></div>
+      <div class="topbar-right">
+        <div class="icon-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 12 6 8Z" stroke="#5B6472" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="#5B6472" stroke-width="1.7"/></svg><div class="dot-flag"></div></div>
+        <div class="avatar" data-user-initials>EW</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <div class="page-title" id="greeting">Welcome back</div>
+          <div class="page-sub" id="greetingSub">Loading your audit status…</div>
+        </div>
+        <div>
+          <button class="btn btn-primary" id="uploadBtn">+ Upload Document</button>
+          <input type="file" id="uploadInput" accept=".pdf,.xls,.xlsx,image/png,image/jpeg" hidden>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-header"><h3>Current Audit Status</h3><span class="badge badge-info" id="auditStatusBadge">—</span></div>
+          <div class="card-pad">
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px;" id="auditTitle">—</div>
+            <div style="font-size:12.5px;color:#8992A3;margin-bottom:18px;" id="auditMeta">—</div>
+            <div style="display:flex;align-items:center;gap:0;" id="phaseStepper"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">Requested Documents</div><div class="kpi-icon" style="background:#FDF3E2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="#B4720A" stroke-width="1.8"/></svg></div></div>
+            <div class="kpi-value mono" id="kpiRequested">—</div>
+            <div class="kpi-trend" style="color:#B4720A;">Action needed</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">Submitted Documents</div><div class="kpi-icon" style="background:#E9F7EF;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12.5 11 14.5 15.5 9.5" stroke="#1A8754" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="#1A8754" stroke-width="1.8"/></svg></div></div>
+            <div class="kpi-value mono" id="kpiSubmitted">—</div>
+            <div class="kpi-trend" style="color:#8992A3;">All reviewed</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-top"><div class="kpi-label">Reports Available</div><div class="kpi-icon" style="background:#EAF0FE;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="#2456C7" stroke-width="1.8" stroke-linejoin="round"/></svg></div></div>
+            <div class="kpi-value mono" id="kpiReports">—</div>
+            <div class="kpi-trend" style="color:#8992A3;">Published by your auditor</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+        <div class="card">
+          <div class="card-header"><h3>Requested Documents</h3><span class="badge badge-warning" id="requestedBadge">—</span></div>
+          <table class="data">
+            <thead><tr><th>Document</th><th>Requested by</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody id="requestedTableBody"><tr><td colspan="4" class="cell-sub">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Reports Available</h3></div>
+          <div class="card-pad" style="display:flex;flex-direction:column;gap:12px;" id="reportsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script src="js/client-portal.js"></script>
+</body>
+</html>

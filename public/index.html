@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login — YUNIVESO</title>
+<link rel="stylesheet" href="theme.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#EEF1F6;font-family:'Source Sans 3',sans-serif}
+  a{color:#2456C7;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .lg-input{width:100%;height:46px;border-radius:10px;border:1.5px solid #E3E6EC;background:#fff;padding:0 14px 0 42px;font-size:14px;font-family:'Source Sans 3',sans-serif;color:#1B1F27;}
+  .lg-input:focus{outline:none;border-color:#2456C7;}
+  .svc-tag{background:rgba(91,141,239,0.14);border:1px solid rgba(91,141,239,0.32);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;color:#C7D4F5;letter-spacing:.01em;}
+</style>
+</head>
+<body>
+<div style="width:1440px;height:900px;display:flex;overflow:hidden;background:#EEF1F6;">
+
+  <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:#EEF1F6;">
+
+    <svg width="220" height="220" style="position:absolute;top:0;right:0;opacity:0.6;" viewBox="0 0 220 220">
+      <g fill="#C9D2E4">
+        <circle cx="10" cy="10" r="2"></circle><circle cx="34" cy="10" r="2"></circle><circle cx="58" cy="10" r="2"></circle><circle cx="82" cy="10" r="2"></circle>
+        <circle cx="10" cy="34" r="2"></circle><circle cx="34" cy="34" r="2"></circle><circle cx="58" cy="34" r="2"></circle><circle cx="82" cy="34" r="2"></circle>
+        <circle cx="10" cy="58" r="2"></circle><circle cx="34" cy="58" r="2"></circle><circle cx="58" cy="58" r="2"></circle><circle cx="82" cy="58" r="2"></circle>
+      </g>
+    </svg>
+
+    <div style="width:420px;background:#fff;border-radius:20px;padding:44px 40px;box-shadow:0 24px 60px -20px rgba(18,22,34,0.22), 0 2px 8px rgba(18,22,34,0.06);border:1px solid #EDEFF3;position:relative;">
+
+      <div style="display:inline-flex;align-items:center;gap:6px;background:#EAF0FE;border-radius:20px;padding:5px 12px;margin-bottom:18px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#2456C7" stroke-width="2"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#2456C7" stroke-width="2"></path></svg>
+        <span style="font-size:11px;font-weight:700;color:#2456C7;letter-spacing:.03em;text-transform:uppercase;">Secure sign-in</span>
+      </div>
+
+      <div style="font-family:'Manrope',sans-serif;font-weight:800;font-size:25px;color:#1B1F27;">Welcome back</div>
+      <div style="font-size:14px;color:#5B6472;margin-top:6px;">Sign in with your YUNIVESO credentials.</div>
+
+      <div style="margin-top:28px;display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <label for="email" style="font-size:12.5px;font-weight:600;color:#1B1F27;display:block;margin-bottom:7px;">Work email</label>
+          <div style="position:relative;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="position:absolute;left:14px;top:15px;"><path d="M4 6h16v12H4z" stroke="#9AA3B6" stroke-width="1.7" stroke-linejoin="round"></path><path d="m4 7 8 6 8-6" stroke="#9AA3B6" stroke-width="1.7" stroke-linejoin="round"></path></svg>
+            <input id="email" type="email" placeholder="name@yuniveso.com" class="lg-input">
+          </div>
+        </div>
+        <div>
+          <label for="password" style="font-size:12.5px;font-weight:600;color:#1B1F27;display:block;margin-bottom:7px;">Password</label>
+          <div style="position:relative;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="position:absolute;left:14px;top:15px;"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#9AA3B6" stroke-width="1.7"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#9AA3B6" stroke-width="1.7"></path></svg>
+            <input id="password" type="password" class="lg-input">
+          </div>
+        </div>
+
+        <div id="loginError" style="display:none;background:#FCEAE8;color:#C1301F;border:1px solid #F4B6AE;border-radius:8px;padding:10px 12px;font-size:13px;"></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#5B6472;">
+            <input type="checkbox" style="width:15px;height:15px;">
+            Remember this device
+          </label>
+          <a href="#" style="font-size:13px;font-weight:600;">Forgot password?</a>
+        </div>
+
+        <button type="button" id="signInBtn" style="width:100%;height:48px;border-radius:10px;border:none;background:linear-gradient(135deg,#2456C7,#3E6FE0);color:#fff;font-family:'Source Sans 3',sans-serif;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 10px 22px -8px rgba(36,86,199,0.55);display:flex;align-items:center;justify-content:center;gap:8px;">
+          Sign in
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </button>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:2px 0;">
+          <div style="flex:1;height:1px;background:#E3E6EC;"></div>
+          <div style="font-size:12px;color:#8992A3;">or continue with</div>
+          <div style="flex:1;height:1px;background:#E3E6EC;"></div>
+        </div>
+
+        <button type="button" style="width:100%;height:46px;border-radius:10px;border:1.5px solid #E3E6EC;background:#fff;color:#1B1F27;font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm4.7 8.3-5 5-2.4-2.4" stroke="#5B6472" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          Single sign-on (SSO)
+        </button>
+
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:16px;border-top:1px solid #E3E6EC;margin-top:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#8992A3" stroke-width="1.7"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#8992A3" stroke-width="1.7"></path></svg>
+          <span style="font-size:12.5px;color:#8992A3;">Two-factor authentication required at sign-in</span>
+        </div>
+      </div>
+    </div>
+  </div><div style="flex:0 0 600px;position:relative;background:#0C1220;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:52px 56px;">
+
+    <svg width="100%" height="100%" viewBox="0 0 600 900" style="position: absolute; inset: 0; opacity: 0.9; left: -2px" preserveAspectRatio="none">
+      <defs>
+        <radialGradient id="g1" cx="20%" cy="10%" r="60%"><stop offset="0%" stop-color="#2456C7" stop-opacity="0.55"></stop><stop offset="100%" stop-color="#2456C7" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="g2" cx="90%" cy="95%" r="55%"><stop offset="0%" stop-color="#5B8DEF" stop-opacity="0.35"></stop><stop offset="100%" stop-color="#5B8DEF" stop-opacity="0"></stop></radialGradient>
+      </defs>
+      <rect width="600" height="900" fill="url(#g1)"></rect>
+      <rect width="600" height="900" fill="url(#g2)"></rect>
+      <g stroke="#2C58B0" stroke-width="1" opacity="0.35" fill="none">
+        <circle cx="470" cy="150" r="40"></circle>
+        <circle cx="470" cy="150" r="80"></circle>
+        <circle cx="470" cy="150" r="122"></circle>
+      </g>
+      <circle cx="470" cy="150" r="5" fill="#5B8DEF"></circle>
+      <g stroke="#28345A" stroke-width="1" opacity="0.6">
+        <line x1="0" y1="620" x2="600" y2="560"></line>
+        <line x1="0" y1="670" x2="600" y2="610"></line>
+        <line x1="0" y1="720" x2="600" y2="660"></line>
+      </g>
+      <g fill="#3868D6" opacity="0.5">
+        <circle cx="70" cy="640" r="3"></circle>
+        <circle cx="230" cy="600" r="3"></circle>
+        <circle cx="390" cy="628" r="3"></circle>
+        <circle cx="540" cy="580" r="3"></circle>
+      </g>
+    </svg>
+
+    <div style="position:relative;display:flex;align-items:center;gap:12px;">
+      <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#2456C7,#6EA0FF);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(36,86,199,0.5);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 15c4-6 12-6 16 0M7.2 18c2.4-3 7.2-3 9.6 0M11 21h2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="12" cy="6.5" r="2.2" fill="#fff"></circle></svg>
+      </div>
+      <div>
+        <div style="font-family:'Manrope',sans-serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:0.01em;">YUNIVESO</div>
+        <div style="font-size:11px;color:#7C8FC2;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-top:1px;">Audit &amp; Compliance Platform</div>
+      </div>
+    </div>
+
+    <div style="position:relative;">
+      <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(91,141,239,0.14);border:1px solid rgba(91,141,239,0.35);border-radius:20px;padding:5px 12px;margin-bottom:20px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#5FE0A5;"></span>
+        <span style="font-size:11.5px;color:#C7D4F5;font-weight:600;">All systems operational</span>
+      </div>
+
+      <div style="font-family:'Manrope',sans-serif;font-weight:800;font-size:32px;line-height:1.22;color:#fff;max-width:460px;">Engagement management, built for the standard of care your clients expect.</div>
+      <div style="font-size:13.5px;color:#9AA6C4;margin-top:14px;max-width:440px;line-height:1.6;">Plan, execute and report on audits end-to-end — with role-based access, complete audit trails and real-time visibility across every engagement.</div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;max-width:460px;">
+        <span class="svc-tag">Financial Statement Audits</span>
+        <span class="svc-tag">Tax Consultancy</span>
+        <span class="svc-tag">Internal Controls Review</span>
+        <span class="svc-tag">Compliance Audits</span>
+        <span class="svc-tag">Risk Advisory</span>
+      </div>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid #232B45;display:flex;flex-direction:column;gap:11px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:0 0 15px;"><path d="M4 6h16v12H4z" stroke="#7C8FC2" stroke-width="1.7" stroke-linejoin="round"></path><path d="m4 7 8 6 8-6" stroke="#7C8FC2" stroke-width="1.7" stroke-linejoin="round"></path></svg>
+          <span style="font-size:13px;color:#C2CBE3;">support@yuniveso.com</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;font-size:12px;color:#606C90;">© 2026 YUNIVESO. All rights reserved.</div>
+  </div>
+
+</div>
+<script>
+(function () {
+  const btn = document.getElementById('signInBtn');
+  const emailEl = document.getElementById('email');
+  const passEl = document.getElementById('password');
+  const errEl = document.getElementById('loginError');
+
+  function showError(msg) {
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  }
+
+  async function submit() {
+    errEl.style.display = 'none';
+    const email = emailEl.value.trim();
+    const password = passEl.value;
+    if (!email || !password) return showError('Enter your email and password.');
+
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) return showError(data.error || 'Sign in failed.');
+      window.location.href = data.redirect;
+    } catch (err) {
+      showError('Could not reach the server. Please try again.');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  btn.addEventListener('click', submit);
+  passEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+})();
+</script>
+</body>
+</html>

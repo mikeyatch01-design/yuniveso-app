@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audit Details — FY26 Financial Statement Audit</title>
+<link rel="stylesheet" href="theme.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0}
+  a{color:#2456C7;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app-shell" style="width:1440px;height:1024px;">
+
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-name">YUNIVESO</div>
+        <div class="brand-sub">Beaumont Assurance Co.</div>
+      </div>
+    </div>
+    <div class="nav-scroll">
+      <div class="nav-section-title">Overview</div>
+      <a class="nav-item" href="admin-dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>Dashboard</a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M2.5 19c.9-3.4 3.4-5 6.5-5s5.6 1.6 6.5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Clients</a>
+      <a class="nav-item active" href="audit-details.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12.5 11 14.5 15.5 9.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.7"/></svg>Audits<span class="nav-badge">27</span></a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="19" cy="18" r="1.6" fill="currentColor"/></svg>Tasks</a>
+      <a class="nav-item" href="findings-tracker.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3 3 20h18L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Findings<span class="nav-badge">14</span></a>
+
+      <div class="nav-section-title">Workspace</div>
+      <a class="nav-item" href="reports-analytics.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M4 19V9m6 10V4m6 15v-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Reports</a>
+      <a class="nav-item" href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.7"/></svg>Documents</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="avatar avatar-sm" style="background:#2A3242;color:#fff;" data-user-initials>MO</div>
+      <div style="min-width:0;"><div style="font-size:13px;color:#fff;font-weight:600;" data-user-name>Marcus Okoye</div><div style="font-size:11.5px;color:#7C8598;">Admin</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Audits / <b id="breadcrumbTitle">—</b></div>
+      <div class="topbar-right">
+        <div class="icon-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 12 6 8Z" stroke="#5B6472" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="#5B6472" stroke-width="1.7"/></svg><div class="dot-flag"></div></div>
+        <div class="avatar" data-user-initials>MO</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card" style="padding:22px 24px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="page-title" style="font-size:20px;" id="auditTitle">—</div>
+              <span class="badge badge-info" id="auditPhaseBadge">—</span>
+              <span class="badge badge-critical" id="auditRiskBadge">—</span>
+            </div>
+            <div class="page-sub" style="margin-top:6px;" id="auditSubline">—</div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-secondary" id="uploadEvidenceBtn">Upload Evidence</button>
+            <input type="file" id="uploadEvidenceInput" accept=".pdf,.xls,.xlsx,image/png,image/jpeg" hidden>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:40px;margin-top:22px;padding-top:18px;border-top:1px solid #E3E6EC;">
+          <div>
+            <div class="cell-sub" style="margin-bottom:6px;">Audit team</div>
+            <div style="display:flex;" id="teamAvatars"></div>
+          </div>
+          <div>
+            <div class="cell-sub" style="margin-bottom:6px;">Overall progress</div>
+            <div style="display:flex;align-items:center;gap:10px;width:180px;"><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div><span style="font-size:12.5px;font-weight:700;" id="progressLabel">0%</span></div>
+          </div>
+          <div>
+            <div class="cell-sub" style="margin-bottom:6px;">Target completion</div>
+            <div style="font-size:13.5px;font-weight:600;" id="targetDate">—</div>
+          </div>
+          <div>
+            <div class="cell-sub" style="margin-bottom:6px;">Scope</div>
+            <div style="font-size:13.5px;font-weight:600;" id="scopeText">—</div>
+          </div>
+          <div>
+            <div class="cell-sub" style="margin-bottom:6px;">Open findings</div>
+            <div style="font-size:13.5px;font-weight:600;color:#C1301F;" id="openFindings">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs" style="margin-bottom:20px;">
+        <div class="tab">Planning</div>
+        <div class="tab active">Field Work</div>
+        <div class="tab">Findings</div>
+        <div class="tab">Reporting</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.7fr 1fr;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><h3>Evidence Collection</h3><span class="badge badge-muted" id="evidenceCountBadge">—</span></div>
+            <table class="data">
+              <thead><tr><th>Item</th><th>Requested from</th><th>Status</th></tr></thead>
+              <tbody id="evidenceTableBody"><tr><td colspan="3" class="cell-sub">Loading…</td></tr></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h3>Testing Procedures</h3><span class="badge badge-muted" id="procedureCountBadge">—</span></div>
+            <table class="data">
+              <thead><tr><th>Procedure</th><th>Assertion</th><th>Assigned to</th><th>Result</th></tr></thead>
+              <tbody id="proceduresTableBody"><tr><td colspan="4" class="cell-sub">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><h3>Interviews Log</h3></div>
+            <div class="card-pad" style="display:flex;flex-direction:column;gap:0;" id="interviewsList"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h3>Notes &amp; Comments</h3></div>
+            <div class="card-pad" style="display:flex;flex-direction:column;gap:14px;" id="notesList"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h3>Risk Assessment</h3></div>
+            <div class="card-pad" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="bar-row"><span style="width:110px;font-size:12.5px;color:#5B6472;">Revenue</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:#C1301F;"></div></div><span style="font-size:12px;font-weight:700;color:#C1301F;">High</span></div>
+              <div class="bar-row"><span style="width:110px;font-size:12.5px;color:#5B6472;">Inventory</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:#B4720A;"></div></div><span style="font-size:12px;font-weight:700;color:#B4720A;">Med</span></div>
+              <div class="bar-row"><span style="width:110px;font-size:12.5px;color:#5B6472;">Fixed assets</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:#1A8754;"></div></div><span style="font-size:12px;font-weight:700;color:#1A8754;">Low</span></div>
+              <div class="bar-row"><span style="width:110px;font-size:12.5px;color:#5B6472;">Payroll</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:#1A8754;"></div></div><span style="font-size:12px;font-weight:700;color:#1A8754;">Low</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script src="js/audit-details.js"></script>
+</body>
+</html>
