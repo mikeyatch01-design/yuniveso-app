@@ -45,17 +45,33 @@ const upload = multer({
   },
 });
 
-// List documents for one audit (scoped: a client only ever sees this
-// list if the audit itself belongs to them, checked below).
+// List documents. With `audit_id`: one audit (scoped: a client only ever
+// sees this if the audit belongs to them). Without it: every document
+// across every audit this user can see — used for the client's full
+// Documents/Reports pages, so the frontend doesn't have to loop per-audit.
 router.get('/', async (req, res) => {
-  const auditId = Number(req.query.audit_id);
-  if (!auditId || !(await assertAuditVisible(req.user, auditId))) return res.status(404).json({ error: 'Audit not found.' });
-
   const category = req.query.category;
-  const params = [auditId];
-  let sql = `SELECT d.id, d.category, d.requested_from, d.original_filename, d.status, d.due_date, d.size_bytes, d.created_at,
-                    u.name uploaded_by_name
-             FROM documents d LEFT JOIN users u ON u.id=d.uploaded_by WHERE d.audit_id=?`;
+
+  if (req.query.audit_id) {
+    const auditId = Number(req.query.audit_id);
+    if (!(await assertAuditVisible(req.user, auditId))) return res.status(404).json({ error: 'Audit not found.' });
+
+    const params = [auditId];
+    let sql = `SELECT d.id, d.category, d.requested_from, d.original_filename, d.status, d.due_date, d.size_bytes, d.created_at,
+                      u.name uploaded_by_name
+               FROM documents d LEFT JOIN users u ON u.id=d.uploaded_by WHERE d.audit_id=?`;
+    if (category) { sql += ' AND d.category=?'; params.push(category); }
+    sql += ' ORDER BY d.created_at DESC';
+    const [rows] = await pool.query(sql, params);
+    return res.json({ documents: rows });
+  }
+
+  const scope = auditScope(req.user, 'a');
+  const params = [...scope.params];
+  let sql = `SELECT d.id, d.audit_id, a.title audit_title, d.category, d.requested_from, d.original_filename,
+                    d.status, d.due_date, d.size_bytes, d.created_at, u.name uploaded_by_name
+             FROM documents d JOIN audits a ON a.id=d.audit_id LEFT JOIN users u ON u.id=d.uploaded_by
+             WHERE ${scope.where}`;
   if (category) { sql += ' AND d.category=?'; params.push(category); }
   sql += ' ORDER BY d.created_at DESC';
   const [rows] = await pool.query(sql, params);

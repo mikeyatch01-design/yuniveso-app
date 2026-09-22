@@ -133,6 +133,20 @@ CREATE TABLE IF NOT EXISTS interviews (
   FOREIGN KEY (auditor_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+-- One thread per client company — the client and any staff at their firm
+-- (admin/auditors) exchange messages here.
+CREATE TABLE IF NOT EXISTS messages (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  org_id     INT NOT NULL,
+  client_id  INT NOT NULL,
+  sender_id  INT NOT NULL,
+  body       TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+  FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS notes (
   id         INT AUTO_INCREMENT PRIMARY KEY,
   audit_id   INT NOT NULL,

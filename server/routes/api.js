@@ -216,6 +216,37 @@ router.get('/reports/analytics', requireRole('admin', 'super_admin'), async (req
   });
 });
 
+// ---------- Messages (one thread per client company) ----------
+async function resolveMessageClientId(user, requestedClientId) {
+  const clientId = user.role === 'client' ? user.client_id : requestedClientId;
+  if (!clientId) return null;
+  const [[client]] = await pool.query('SELECT * FROM clients WHERE id = ?', [clientId]);
+  if (!client) return null;
+  if (user.role === 'client' && client.id !== user.client_id) return null;
+  if (user.role === 'admin' && client.org_id !== user.org_id) return null;
+  if (user.role === 'auditor' && client.org_id !== user.org_id) return null;
+  return client;
+}
+
+router.get('/messages', async (req, res) => {
+  const client = await resolveMessageClientId(req.user, Number(req.query.client_id));
+  if (!client) return res.status(404).json({ error: 'Not found.' });
+  const [rows] = await pool.query(`
+    SELECT m.*, u.name sender_name, u.role sender_role, u.initials sender_initials
+    FROM messages m JOIN users u ON u.id = m.sender_id
+    WHERE m.client_id = ? ORDER BY m.created_at ASC`, [client.id]);
+  res.json({ messages: rows, client_id: client.id, client_name: client.name });
+});
+
+router.post('/messages', async (req, res) => {
+  const client = await resolveMessageClientId(req.user, Number(req.body.client_id));
+  if (!client) return res.status(404).json({ error: 'Not found.' });
+  const body = (req.body.body || '').trim();
+  if (!body) return res.status(400).json({ error: 'Message cannot be empty.' });
+  await pool.query('INSERT INTO messages (org_id, client_id, sender_id, body) VALUES (?,?,?,?)', [client.org_id, client.id, req.user.id, body]);
+  res.json({ ok: true });
+});
+
 module.exports = router;
 module.exports.auditScope = auditScope;
 module.exports.assertAuditVisible = assertAuditVisible;

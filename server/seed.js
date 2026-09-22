@@ -32,8 +32,8 @@ function makeSimplePdf(title, lines) {
   return Buffer.from(pdf, 'latin1');
 }
 
-async function seedDatabase() {
-  const conn = await mysql.createConnection({
+function makeConnection() {
+  return mysql.createConnection({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT || 3306),
     user: process.env.DB_USER,
@@ -41,6 +41,21 @@ async function seedDatabase() {
     database: process.env.DB_NAME,
     multipleStatements: true,
   });
+}
+
+// Every statement in schema.sql is CREATE TABLE IF NOT EXISTS — safe to
+// run any time, on any existing database, without touching a single row.
+// This is what lets a new table (like `messages`) get added later without
+// re-running the destructive full seed below.
+async function applySchema() {
+  const conn = await makeConnection();
+  const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
+  await conn.query(schema);
+  await conn.end();
+}
+
+async function seedDatabase() {
+  const conn = await makeConnection();
 
   console.log('Applying schema...');
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
@@ -252,6 +267,7 @@ async function seedDatabase() {
 }
 
 module.exports = seedDatabase;
+module.exports.applySchema = applySchema;
 
 // Only auto-run as a standalone script (`npm run seed`) — when imported
 // by server/index.js for the one-time Railway trigger, the caller decides

@@ -47,6 +47,23 @@ app.get('/api/setup/seed', async (req, res) => {
   }
 });
 
+// Non-destructive: safe to run any time a new table gets added to
+// schema.sql without wiping existing data (unlike /api/setup/seed, which
+// resets everything back to demo data).
+app.get('/api/setup/migrate', async (req, res) => {
+  if (!process.env.JWT_SECRET || req.query.key !== process.env.JWT_SECRET) {
+    return res.status(403).json({ error: 'Forbidden.' });
+  }
+  try {
+    const { applySchema } = require('./seed');
+    await applySchema();
+    res.json({ ok: true, message: 'Schema applied.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api', adminRoutes);
