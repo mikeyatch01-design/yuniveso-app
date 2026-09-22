@@ -19,12 +19,6 @@ app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(readSession);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/documents', documentRoutes);
-app.use('/api', apiRoutes);
-
-app.use(express.static(path.join(__dirname, '..', 'public')));
-
 app.get('/healthz', (req, res) => res.json({ ok: true }));
 
 app.get('/api/setup/seed', async (req, res) => {
@@ -40,6 +34,12 @@ app.get('/api/setup/seed', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api', apiRoutes);
+
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
 
