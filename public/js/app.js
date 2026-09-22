@@ -5,6 +5,25 @@
 // session cookie and re-scopes every query to that user's role, so this
 // guard existing or not never changes what data is actually reachable.
 
+// ---------- Theme (dark/light) ----------
+// Applied immediately, outside requireSession, so there's no flash of the
+// wrong theme while the session check is still in flight. Persisted per
+// browser via localStorage — same idea as the "remember this device"
+// login option, but for appearance rather than auth.
+(function initTheme() {
+  const saved = localStorage.getItem('yuniveso_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('themeToggleBtn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('yuniveso_theme', next);
+    });
+  });
+})();
+
 const ROLE_HOME = {
   super_admin: '/super-admin.html',
   admin: '/admin-dashboard.html',
