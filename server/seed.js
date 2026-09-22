@@ -4,9 +4,6 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const mysql = require('mysql2/promise');
 
-// Builds a tiny but structurally valid one-page PDF by hand (no
-// dependency needed) — just enough that "Download" in the demo actually
-// opens a real file instead of a broken one.
 function makeSimplePdf(title, lines) {
   const bodyLines = lines.map((l, i) => `(${l.replace(/[()\\]/g, '')}) Tj 0 -18 Td`).join('\n');
   const streamContent = `BT /F1 14 Tf 40 260 Td (${title.replace(/[()\\]/g, '')}) Tj 0 -26 Td /F1 10 Tf\n${bodyLines}\nET`;
@@ -32,7 +29,7 @@ function makeSimplePdf(title, lines) {
   return Buffer.from(pdf, 'latin1');
 }
 
-async function run() {
+async function seedDatabase() {
   const conn = await mysql.createConnection({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT || 3306),
@@ -56,13 +53,11 @@ async function run() {
   const PASSWORD = 'Demo1234!';
   const hash = await bcrypt.hash(PASSWORD, 10);
 
-  // ---------- Super admin (platform-wide, no org) ----------
   await conn.query(
     `INSERT INTO users (org_id, client_id, role, name, title, email, password_hash, initials) VALUES (NULL,NULL,'super_admin',?,?,?,?,?)`,
     ['Sandra Aitken', 'Super Admin', 'super@yuniveso.com', hash, 'SA']
   );
 
-  // ---------- Org 1: Beaumont Assurance Co. (the fully fleshed-out demo org) ----------
   const [orgRes] = await conn.query(
     `INSERT INTO organizations (name, industry, plan, mrr, status) VALUES (?,?,?,?,?)`,
     ['Beaumont Assurance Co.', 'Manufacturing', 'Enterprise', 21800, 'Active']
@@ -103,7 +98,6 @@ async function run() {
       [orgId, name, industry, contact, email]
     );
     clientIds[name] = r.insertId;
-    // One portal login per client, named after the contact.
     const initials = contact.split(' ').map(s => s[0]).join('').toUpperCase();
     await conn.query(
       `INSERT INTO users (org_id, client_id, role, name, title, email, password_hash, initials) VALUES (?,?,'client',?, 'Finance Director', ?, ?, ?)`,
@@ -174,7 +168,6 @@ async function run() {
     );
   }
 
-  // ---------- Documents (with real placeholder PDFs on disk) ----------
   const uploadsRoot = path.join(__dirname, '..', 'uploads', String(orgId), String(fya));
   await fs.promises.mkdir(uploadsRoot, { recursive: true });
 
@@ -208,7 +201,6 @@ async function run() {
     [orgId, fya, auditorIds.DC, orgId, auditIds['Inventory Controls Review'], auditorIds.JM, orgId, auditorIds.TL]
   );
 
-  // ---------- Org 2: a second, lighter-weight org, so Super Admin has more than one row to show ----------
   const [org2Res] = await conn.query(
     `INSERT INTO organizations (name, industry, plan, mrr, status) VALUES (?,?,?,?,?)`,
     ['Harrow & Finch LLP', 'Financial services', 'Enterprise', 14200, 'Active']
@@ -239,4 +231,8 @@ async function run() {
   console.log('  Client      : elena@kesteven-demo.com (Kesteven Manufacturing)');
 }
 
-run().catch((err) => { console.error(err); process.exit(1); });
+module.exports = seedDatabase;
+
+if (require.main === module) {
+  seedDatabase().catch((err) => { console.error(err); process.exit(1); });
+}
