@@ -12,10 +12,6 @@ const documentRoutes = require('./routes/documents');
 
 const app = express();
 
-// Baseline hardening at the app level. This is NOT a substitute for a
-// real WAF/CDN (Cloudflare) in front of the app in production — see
-// SECURITY.md — but it covers what's actually the app's own job:
-// sane security headers, and blunting brute-force/scraping traffic.
 app.use(helmet());
 app.use(rateLimit({ windowMs: 60 * 1000, limit: 120 })); // 120 req/min/IP, global backstop
 
@@ -31,7 +27,20 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/healthz', (req, res) => res.json({ ok: true }));
 
-// Anything else under /api that didn't match is a real 404, not the SPA fallback.
+app.get('/api/setup/seed', async (req, res) => {
+  if (!process.env.JWT_SECRET || req.query.key !== process.env.JWT_SECRET) {
+    return res.status(403).json({ error: 'Forbidden.' });
+  }
+  try {
+    const seedDatabase = require('./seed');
+    await seedDatabase();
+    res.json({ ok: true, message: 'Demo data seeded. Check the Railway deploy logs for login credentials.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
 
 app.use((err, req, res, next) => {
