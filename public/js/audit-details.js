@@ -11,6 +11,25 @@
   try {
     const { audit, team, documents, procedures, interviews, notes, findings } = await apiGet(`/api/audits/${auditId}`);
 
+    // Every section below is always visible in this single-page workspace —
+    // these tabs just reflect/jump between phases rather than swapping
+    // content, so clicking one highlights it and scrolls to the matching
+    // section instead of hiding everything else.
+    const tabs = document.querySelectorAll('.tab');
+    const phaseSectionId = { Planning: 'teamAvatars', 'Field Work': 'evidenceTableBody', Findings: 'openFindings', Reporting: 'notesList' };
+    tabs.forEach(tab => {
+      if (tab.textContent.trim() === audit.phase) tab.classList.add('active');
+      else tab.classList.remove('active');
+      tab.style.cursor = 'pointer';
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const targetId = phaseSectionId[tab.textContent.trim()];
+        const target = targetId && document.getElementById(targetId);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+
     document.getElementById('breadcrumbTitle').textContent = audit.title;
     document.getElementById('auditTitle').textContent = audit.title;
     document.getElementById('auditPhaseBadge').textContent = audit.phase;
@@ -90,6 +109,38 @@
       } catch (err) {
         alert('Upload failed: ' + err.message);
         uploadBtn.disabled = false;
+      }
+    });
+
+    const statusModal = document.getElementById('statusModalOverlay');
+    const statusForm = document.getElementById('statusForm');
+    const statusErr = document.getElementById('statusFormError');
+    document.getElementById('updateStatusBtn').addEventListener('click', () => {
+      document.getElementById('fStatusPhase').value = audit.phase;
+      document.getElementById('fStatusStatus').value = audit.status;
+      document.getElementById('fStatusProgress').value = audit.progress_pct;
+      statusErr.style.display = 'none';
+      statusModal.classList.add('show');
+    });
+    document.getElementById('statusModalClose').addEventListener('click', () => statusModal.classList.remove('show'));
+    document.getElementById('statusModalCancel').addEventListener('click', () => statusModal.classList.remove('show'));
+    statusModal.addEventListener('click', (e) => { if (e.target === statusModal) statusModal.classList.remove('show'); });
+    statusForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusErr.style.display = 'none';
+      const submitBtn = document.getElementById('statusSubmitBtn');
+      submitBtn.disabled = true;
+      try {
+        await apiPatch(`/api/audits/${auditId}`, {
+          phase: document.getElementById('fStatusPhase').value,
+          status: document.getElementById('fStatusStatus').value,
+          progress_pct: Number(document.getElementById('fStatusProgress').value) || 0,
+        });
+        window.location.reload();
+      } catch (err) {
+        statusErr.textContent = err.message;
+        statusErr.style.display = 'block';
+        submitBtn.disabled = false;
       }
     });
   } catch (err) {

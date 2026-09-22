@@ -169,3 +169,17 @@ CREATE TABLE IF NOT EXISTS tasks (
   FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
   FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS time_entries (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  org_id     INT NOT NULL,
+  audit_id   INT NOT NULL,
+  user_id    INT NOT NULL,
+  entry_date DATE NOT NULL,
+  hours      DECIMAL(5,2) NOT NULL,
+  notes      VARCHAR(255) NOT NULL DEFAULT '',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id) ON DELETE CASCADE,
+  FOREIGN KEY (audit_id) REFERENCES audits(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

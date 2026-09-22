@@ -52,10 +52,7 @@
     <div class="topbar">
       <div class="breadcrumb">Platform / <b>Dashboard</b></div>
       <div class="topbar-right">
-        <div class="search-input">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Search organizations, clients, audits…
-        </div>
+        <div class="search-input"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input type="text" id="searchInput" placeholder="Search organizations…" style="border:none;background:transparent;outline:none;font-size:13px;color:inherit;width:100%;"></div>
         <div class="icon-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 12 6 8Z" stroke="#5B6472" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="#5B6472" stroke-width="1.7"/></svg><div class="dot-flag"></div></div>
         <div class="avatar" data-user-initials>SA</div>
       </div>
@@ -68,8 +65,8 @@
           <div class="page-sub">System-wide performance across all organizations · Updated 2 minutes ago</div>
         </div>
         <div style="display:flex;gap:10px;">
-          <button class="btn btn-secondary">Export report</button>
-          <button class="btn btn-primary">+ Add Organization</button>
+          <button class="btn btn-secondary" onclick="window.print()">Export report</button>
+          <a class="btn btn-primary" href="organizations.html">+ Add Organization</a>
         </div>
       </div>
 
@@ -124,7 +121,7 @@
         </div>
 
         <div class="card">
-          <div class="card-header"><h3>System Activity</h3><a href="#" style="font-size:12.5px;font-weight:600;">View log</a></div>
+          <div class="card-header"><h3>System Activity</h3><a href="organizations.html" style="font-size:12.5px;font-weight:600;">View log</a></div>
           <div class="card-pad" style="display:flex;flex-direction:column;gap:16px;">
             <div style="display:flex;gap:12px;">
               <div style="width:8px;height:8px;border-radius:50%;background:#1A8754;margin-top:6px;flex:0 0 8px;"></div>
@@ -155,7 +152,7 @@
           <h3>Organizations</h3>
           <div style="display:flex;gap:8px;">
             <div class="badge badge-muted">36 total</div>
-            <a href="#" style="font-size:12.5px;font-weight:600;">View all</a>
+            <a href="organizations.html" style="font-size:12.5px;font-weight:600;">View all</a>
           </div>
         </div>
         <table class="data">
@@ -166,7 +163,7 @@
     </div>
   </div>
 </div>
-<script src="js/app.js?v=2"></script>
-<script src="js/super-admin.js?v=2"></script>
+<script src="js/app.js?v=3"></script>
+<script src="js/super-admin.js?v=3"></script>
 </body>
 </html>

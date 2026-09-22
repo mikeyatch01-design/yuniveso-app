@@ -22,6 +22,42 @@
         <td>${statusBadge(a.status)}</td>
       </tr>
     `).join('') : `<tr><td colspan="5" class="cell-sub">No audits assigned yet.</td></tr>`;
+    wireTableSearch('searchInput', 'auditsTableBody');
+
+    const timeModal = document.getElementById('timeModalOverlay');
+    const timeForm = document.getElementById('timeForm');
+    const timeErr = document.getElementById('timeFormError');
+    const fTimeAudit = document.getElementById('fTimeAudit');
+    document.getElementById('logTimeBtn').addEventListener('click', () => {
+      fTimeAudit.innerHTML = audits.map(a => `<option value="${a.id}">${escapeHtml(a.title)} (${escapeHtml(a.client_name)})</option>`).join('');
+      timeForm.reset();
+      document.getElementById('fTimeDate').value = new Date().toISOString().slice(0, 10);
+      timeErr.style.display = 'none';
+      timeModal.classList.add('show');
+    });
+    document.getElementById('timeModalClose').addEventListener('click', () => timeModal.classList.remove('show'));
+    document.getElementById('timeModalCancel').addEventListener('click', () => timeModal.classList.remove('show'));
+    timeModal.addEventListener('click', (e) => { if (e.target === timeModal) timeModal.classList.remove('show'); });
+    timeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      timeErr.style.display = 'none';
+      const submitBtn = document.getElementById('timeSubmitBtn');
+      submitBtn.disabled = true;
+      try {
+        await apiPost('/api/time-entries', {
+          audit_id: Number(fTimeAudit.value),
+          entry_date: document.getElementById('fTimeDate').value,
+          hours: Number(document.getElementById('fTimeHours').value),
+          notes: document.getElementById('fTimeNotes').value.trim(),
+        });
+        timeModal.classList.remove('show');
+      } catch (err) {
+        timeErr.textContent = err.message;
+        timeErr.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
   } catch (err) {
     console.error(err);
   }

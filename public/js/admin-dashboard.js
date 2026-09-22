@@ -37,6 +37,7 @@
         <td>${statusBadge(a.status)}</td>
       </tr>
     `).join('') : `<tr><td colspan="7" class="cell-sub">No active audits.</td></tr>`;
+    wireTableSearch('searchInput', 'auditsTableBody');
   } catch (err) {
     console.error(err);
   }

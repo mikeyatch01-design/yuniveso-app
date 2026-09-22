@@ -271,4 +271,89 @@ router.delete('/tasks/:id', requireRole('admin'), async (req, res) => {
   res.json({ ok: true });
 });
 
+// ---------- Audits ----------
+// Admin creates/deletes/fully edits audits in their own org (Super Admin:
+// any org). An auditor may only nudge phase/status/progress on an audit
+// they're actually on the team for — never reassign the client, lead, or
+// team itself.
+
+router.post('/audits', requireRole('super_admin', 'admin'), async (req, res) => {
+  let { org_id, client_id, title, phase, status, risk_level, lead_auditor_id, team, start_date, target_date, scope_text } = req.body || {};
+  if (req.user.role === 'admin') org_id = req.user.org_id;
+  if (!org_id || !client_id || !title) return res.status(400).json({ error: 'Client and title are required.' });
+
+  const [[client]] = await pool.query('SELECT * FROM clients WHERE id = ? AND org_id = ?', [client_id, org_id]);
+  if (!client) return res.status(400).json({ error: 'That client does not belong to this organization.' });
+
+  const [[{ n }]] = await pool.query('SELECT COUNT(*) n FROM audits WHERE org_id = ?', [org_id]);
+  const code = `AUD-${new Date().getFullYear()}-${String(1000 + n + 1).slice(1)}`;
+
+  const [result] = await pool.query(
+    `INSERT INTO audits (org_id, client_id, engagement_code, title, phase, status, risk_level, lead_auditor_id, start_date, target_date, progress_pct, scope_text)
+     VALUES (?,?,?,?,?,?,?,?,?,?,0,?)`,
+    [org_id, client_id, code, title, phase || 'Planning', status || 'Assigned', risk_level || 'Medium', lead_auditor_id || null, start_date || null, target_date || null, scope_text || '']
+  );
+  const auditId = result.insertId;
+
+  const teamIds = Array.isArray(team) ? team : (lead_auditor_id ? [lead_auditor_id] : []);
+  for (const userId of new Set(teamIds)) {
+    await pool.query('INSERT IGNORE INTO audit_team (audit_id, user_id) VALUES (?,?)', [auditId, userId]);
+  }
+
+  res.json({ ok: true, id: auditId, code });
+});
+
+async function loadAuditForMutation(user, auditId) {
+  const [[audit]] = await pool.query('SELECT * FROM audits WHERE id = ?', [auditId]);
+  if (!audit) return null;
+  if (user.role === 'super_admin') return audit;
+  if (user.role === 'admin' && audit.org_id === user.org_id) return audit;
+  if (user.role === 'auditor' && audit.org_id === user.org_id) {
+    const [[onTeam]] = await pool.query('SELECT 1 x FROM audit_team WHERE audit_id = ? AND user_id = ?', [auditId, user.id]);
+    if (onTeam) return audit;
+  }
+  return null;
+}
+
+router.patch('/audits/:id', requireRole('super_admin', 'admin', 'auditor'), async (req, res) => {
+  const audit = await loadAuditForMutation(req.user, req.params.id);
+  if (!audit) return res.status(404).json({ error: 'Not found.' });
+
+  const fields = [];
+  const params = [];
+  const { phase, status, progress_pct } = req.body || {};
+  if (phase != null) { fields.push('phase = ?'); params.push(phase); }
+  if (status != null) { fields.push('status = ?'); params.push(status); }
+  if (progress_pct != null) { fields.push('progress_pct = ?'); params.push(Math.max(0, Math.min(100, Number(progress_pct)))); }
+
+  // Only Admin/Super Admin may touch these — an auditor can move the
+  // work forward but not reassign who owns it or change client/scope.
+  if (req.user.role !== 'auditor') {
+    const { title, client_id, risk_level, lead_auditor_id, start_date, target_date, scope_text, team } = req.body || {};
+    if (title != null) { fields.push('title = ?'); params.push(title); }
+    if (client_id != null) { fields.push('client_id = ?'); params.push(client_id); }
+    if (risk_level != null) { fields.push('risk_level = ?'); params.push(risk_level); }
+    if (lead_auditor_id !== undefined) { fields.push('lead_auditor_id = ?'); params.push(lead_auditor_id || null); }
+    if (start_date != null) { fields.push('start_date = ?'); params.push(start_date); }
+    if (target_date != null) { fields.push('target_date = ?'); params.push(target_date); }
+    if (scope_text != null) { fields.push('scope_text = ?'); params.push(scope_text); }
+    if (Array.isArray(team)) {
+      await pool.query('DELETE FROM audit_team WHERE audit_id = ?', [req.params.id]);
+      for (const userId of new Set(team)) {
+        await pool.query('INSERT IGNORE INTO audit_team (audit_id, user_id) VALUES (?,?)', [req.params.id, userId]);
+      }
+    }
+  }
+  if (!fields.length && !Array.isArray((req.body || {}).team)) return res.status(400).json({ error: 'Nothing to update.' });
+  if (fields.length) await pool.query(`UPDATE audits SET ${fields.join(', ')} WHERE id = ?`, [...params, req.params.id]);
+  res.json({ ok: true });
+});
+
+router.delete('/audits/:id', requireRole('super_admin', 'admin'), async (req, res) => {
+  const audit = await loadAuditForMutation(req.user, req.params.id);
+  if (!audit) return res.status(404).json({ error: 'Not found.' });
+  await pool.query('DELETE FROM audits WHERE id = ?', [req.params.id]);
+  res.json({ ok: true });
+});
+
 module.exports = router;

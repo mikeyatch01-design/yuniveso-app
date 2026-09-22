@@ -176,17 +176,20 @@ router.get('/findings', async (req, res) => {
   res.json({ findings: rows });
 });
 
-router.post('/findings', requireRole('admin', 'auditor'), async (req, res) => {
+router.post('/findings', requireRole('admin', 'auditor', 'super_admin'), async (req, res) => {
   const { audit_id, description, risk_level, department, responsible_id, target_date } = req.body || {};
   if (!(await assertAuditVisible(req.user, audit_id))) return res.status(404).json({ error: 'Audit not found.' });
   if (!description || !risk_level) return res.status(400).json({ error: 'Description and risk level are required.' });
 
-  const [[{ n }]] = await pool.query('SELECT COUNT(*) n FROM findings WHERE org_id=?', [req.user.org_id]);
+  // Derived from the audit, not the requester — a super_admin creating a
+  // finding has no org_id of their own, but the audit always does.
+  const [[{ org_id }]] = await pool.query('SELECT org_id FROM audits WHERE id = ?', [audit_id]);
+  const [[{ n }]] = await pool.query('SELECT COUNT(*) n FROM findings WHERE org_id=?', [org_id]);
   const code = 'F-' + String(100 + n + 1);
   await pool.query(
     `INSERT INTO findings (org_id, audit_id, code, description, risk_level, department, responsible_id, target_date)
      VALUES (?,?,?,?,?,?,?,?)`,
-    [req.user.org_id, audit_id, code, description, risk_level, department || '', responsible_id || null, target_date || null]
+    [org_id, audit_id, code, description, risk_level, department || '', responsible_id || null, target_date || null]
   );
   res.json({ ok: true, code });
 });
@@ -247,6 +250,86 @@ router.post('/messages', async (req, res) => {
   const body = (req.body.body || '').trim();
   if (!body) return res.status(400).json({ error: 'Message cannot be empty.' });
   await pool.query('INSERT INTO messages (org_id, client_id, sender_id, body) VALUES (?,?,?,?)', [client.org_id, client.id, req.user.id, body]);
+  res.json({ ok: true });
+});
+
+// One row per client company, for the staff-side inbox list — which
+// client to open is picked from here, then the existing GET/POST
+// /messages (with ?client_id=) loads/sends within that thread.
+router.get('/messages/threads', requireRole('super_admin', 'admin', 'auditor'), async (req, res) => {
+  let sql = `SELECT c.id client_id, c.name client_name,
+      (SELECT body FROM messages m WHERE m.client_id=c.id ORDER BY m.created_at DESC LIMIT 1) last_body,
+      (SELECT created_at FROM messages m WHERE m.client_id=c.id ORDER BY m.created_at DESC LIMIT 1) last_at
+    FROM clients c`;
+  const params = [];
+  if (req.user.role !== 'super_admin') { sql += ' WHERE c.org_id = ?'; params.push(req.user.org_id); }
+  sql += ' ORDER BY last_at IS NULL, last_at DESC';
+  const [rows] = await pool.query(sql, params);
+  res.json({ threads: rows });
+});
+
+// ---------- Notifications ----------
+// Computed on the fly from real data (overdue tasks, high-risk open
+// findings, documents awaiting upload, etc.) rather than a stored,
+// separately-maintained notifications table — nothing to fall out of
+// sync with reality.
+router.get('/notifications', async (req, res) => {
+  const user = req.user;
+  const items = [];
+
+  if (user.role === 'super_admin') {
+    const [orgs] = await pool.query("SELECT name FROM organizations WHERE status IN ('Payment due','Suspended') LIMIT 5");
+    orgs.forEach(o => items.push({ level: 'warning', text: `${o.name} has a billing issue`, }));
+  }
+
+  if (user.role === 'admin') {
+    const [tasks] = await pool.query("SELECT title FROM tasks WHERE org_id=? AND status='Overdue' LIMIT 5", [user.org_id]);
+    tasks.forEach(t => items.push({ level: 'critical', text: `Overdue task: ${t.title}` }));
+    const [findings] = await pool.query(
+      "SELECT code, description FROM findings WHERE org_id=? AND risk_level IN ('Critical','High') AND status NOT IN ('Resolved') LIMIT 5",
+      [user.org_id]
+    );
+    findings.forEach(f => items.push({ level: 'critical', text: `${f.code}: ${f.description}` }));
+    const [reviews] = await pool.query("SELECT title FROM audits WHERE org_id=? AND status='Review Required' LIMIT 5", [user.org_id]);
+    reviews.forEach(a => items.push({ level: 'warning', text: `Awaiting your review: ${a.title}` }));
+  }
+
+  if (user.role === 'auditor') {
+    const [tasks] = await pool.query("SELECT title FROM tasks WHERE assigned_to=? AND status IN ('Open','Overdue') ORDER BY status='Overdue' DESC LIMIT 5", [user.id]);
+    tasks.forEach(t => items.push({ level: 'info', text: `Task: ${t.title}` }));
+  }
+
+  if (user.role === 'client') {
+    const scope = auditScope(user);
+    const [docs] = await pool.query(
+      `SELECT d.original_filename FROM documents d JOIN audits a ON a.id=d.audit_id WHERE ${scope.where} AND d.status='Awaiting' LIMIT 5`,
+      scope.params
+    );
+    docs.forEach(d => items.push({ level: 'warning', text: `Requested: ${d.original_filename}` }));
+  }
+
+  res.json({ notifications: items });
+});
+
+// ---------- Time entries ----------
+router.get('/time-entries', requireRole('admin', 'auditor'), async (req, res) => {
+  let sql = `SELECT t.*, a.title audit_title, u.name user_name FROM time_entries t
+             JOIN audits a ON a.id = t.audit_id JOIN users u ON u.id = t.user_id WHERE t.org_id = ?`;
+  const params = [req.user.org_id];
+  if (req.user.role === 'auditor') { sql += ' AND t.user_id = ?'; params.push(req.user.id); }
+  sql += ' ORDER BY t.entry_date DESC LIMIT 50';
+  const [rows] = await pool.query(sql, params);
+  res.json({ time_entries: rows });
+});
+
+router.post('/time-entries', requireRole('auditor'), async (req, res) => {
+  const { audit_id, entry_date, hours, notes } = req.body || {};
+  if (!(await assertAuditVisible(req.user, audit_id))) return res.status(404).json({ error: 'Audit not found.' });
+  if (!entry_date || !hours) return res.status(400).json({ error: 'Date and hours are required.' });
+  await pool.query(
+    'INSERT INTO time_entries (org_id, audit_id, user_id, entry_date, hours, notes) VALUES (?,?,?,?,?,?)',
+    [req.user.org_id, audit_id, req.user.id, entry_date, hours, (notes || '').trim()]
+  );
   res.json({ ok: true });
 });
 

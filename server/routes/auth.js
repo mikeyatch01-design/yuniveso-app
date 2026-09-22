@@ -26,7 +26,7 @@ const HOME_BY_ROLE = {
 };
 
 router.post('/login', loginLimiter, async (req, res) => {
-  const { email, password } = req.body || {};
+  const { email, password, remember } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
 
   const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [String(email).trim().toLowerCase()]);
@@ -39,7 +39,7 @@ router.post('/login', loginLimiter, async (req, res) => {
   const ok = await bcrypt.compare(password, user.password_hash);
   if (!ok) return res.status(401).json(genericError);
 
-  issueToken(res, user);
+  issueToken(res, user, !!remember);
   res.json({
     ok: true,
     redirect: HOME_BY_ROLE[user.role] || '/index.html',
@@ -49,6 +49,14 @@ router.post('/login', loginLimiter, async (req, res) => {
 
 router.post('/logout', (req, res) => {
   clearToken(res);
+  res.json({ ok: true });
+});
+
+// No email service exists in this environment, so this can't actually
+// send a reset link — it exists so the login page's link isn't a dead
+// end, and always answers the same regardless of whether the email
+// matches an account (never reveal who has one).
+router.post('/forgot-password', loginLimiter, async (req, res) => {
   res.json({ ok: true });
 });
 

@@ -26,6 +26,7 @@
         <td>${statusBadge(o.status)}</td>
       </tr>
     `).join('');
+    wireTableSearch('searchInput', 'orgsTableBody');
   } catch (err) {
     console.error(err);
   }

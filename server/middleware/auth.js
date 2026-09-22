@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // cross-site (helps against CSRF) — see index.js for the cookie flags.
 const COOKIE_NAME = 'yuniveso_session';
 
-function issueToken(res, user) {
+function issueToken(res, user, remember) {
   const payload = {
     id: user.id,
     role: user.role,
@@ -13,12 +13,13 @@ function issueToken(res, user) {
     client_id: user.client_id,
     name: user.name,
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '12h' });
+  const maxAgeMs = remember ? 30 * 24 * 60 * 60 * 1000 : 12 * 60 * 60 * 1000;
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: Math.floor(maxAgeMs / 1000) });
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 12 * 60 * 60 * 1000,
+    maxAge: maxAgeMs,
   });
 }
 

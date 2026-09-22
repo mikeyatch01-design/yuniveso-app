@@ -24,6 +24,7 @@ async function requireSession(allowedRoles) {
     return null;
   }
   applyUserChrome(user);
+  wireNotifications();
   return user;
 }
 
@@ -109,4 +110,85 @@ function statusBadge(status) { return badge(status, STATUS_BADGE[status] || 'bad
 
 function avatarSm(name) {
   return `<div class="avatar avatar-sm">${escapeHtml(initials(name))}</div>`;
+}
+
+// ---------- Notifications (the bell icon) ----------
+// Works on any page with a `.icon-btn` containing a `.dot-flag` — that's
+// every dashboard's bell icon already in the original markup, so no
+// per-page HTML changes were needed to light this up everywhere at once.
+const NOTIF_LEVEL_COLOR = { critical: 'var(--critical)', warning: 'var(--warning)', info: 'var(--info)' };
+
+async function wireNotifications() {
+  const btn = document.getElementById('notifBtn') || document.querySelector('.icon-btn');
+  if (!btn || btn.dataset.notifWired) return;
+  btn.dataset.notifWired = '1';
+  const dot = btn.querySelector('.dot-flag');
+
+  let notifications = [];
+  try {
+    ({ notifications } = await apiGet('/api/notifications'));
+  } catch (err) { return; }
+
+  if (dot) dot.style.display = notifications.length ? '' : 'none';
+
+  btn.style.cursor = 'pointer';
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleNotifPanel(btn, notifications);
+  });
+
+  // Some sidebars have their own "Notifications" nav link rather than
+  // (or in addition to) the topbar bell — same data, same panel.
+  const navLink = document.getElementById('notificationsNavLink');
+  if (navLink) {
+    navLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleNotifPanel(navLink, notifications);
+    });
+  }
+}
+
+function toggleNotifPanel(anchor, notifications) {
+  const existing = document.getElementById('__notifPanel');
+  if (existing) { existing.remove(); return; }
+
+  const rect = anchor.getBoundingClientRect();
+  const panel = document.createElement('div');
+  panel.id = '__notifPanel';
+  panel.style.cssText = `position:fixed;top:${rect.bottom + 8}px;right:${window.innerWidth - rect.right}px;width:320px;max-height:360px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(18,22,34,.18);z-index:200;padding:8px;`;
+  panel.innerHTML = notifications.length
+    ? notifications.map(n => `
+        <div style="padding:10px 12px;border-radius:8px;font-size:13px;display:flex;gap:8px;align-items:flex-start;">
+          <span style="width:7px;height:7px;border-radius:50%;margin-top:5px;flex:0 0 7px;background:${NOTIF_LEVEL_COLOR[n.level] || 'var(--text-3)'};"></span>
+          <span>${escapeHtml(n.text)}</span>
+        </div>
+      `).join('')
+    : `<div style="padding:16px;text-align:center;color:var(--text-3);font-size:13px;">You're all caught up.</div>`;
+  document.body.appendChild(panel);
+
+  setTimeout(() => {
+    document.addEventListener('click', function closeOnOutside(ev) {
+      if (!panel.contains(ev.target)) {
+        panel.remove();
+        document.removeEventListener('click', closeOnOutside);
+      }
+    });
+  }, 0);
+}
+
+// ---------- Table search ----------
+// Filters visible rows of a rendered table by plain substring match —
+// call once after the table's initial render (re-filters live as you type,
+// no need to re-call after later re-renders since it reads the live DOM).
+function wireTableSearch(inputId, tbodyId) {
+  const input = document.getElementById(inputId);
+  const tbody = document.getElementById(tbodyId);
+  if (!input || !tbody) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    Array.from(tbody.rows).forEach(row => {
+      row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
 }

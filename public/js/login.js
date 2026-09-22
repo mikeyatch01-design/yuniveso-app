@@ -3,6 +3,7 @@
   const emailEl = document.getElementById('email');
   const passEl = document.getElementById('password');
   const errEl = document.getElementById('loginError');
+  const rememberEl = document.getElementById('rememberCheckbox');
 
   function showError(msg) {
     errEl.textContent = msg;
@@ -20,7 +21,7 @@
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember: rememberEl.checked }),
       });
       const data = await res.json();
       if (!res.ok) return showError(data.error || 'Sign in failed.');
@@ -34,4 +35,25 @@
 
   btn.addEventListener('click', submit);
   passEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+
+  // No email service exists to send a real reset link, so this is an
+  // honest substitute: confirm the request without ever revealing
+  // whether that email has an account (avoids leaking who's a user).
+  document.getElementById('forgotPasswordLink').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = prompt('Enter your work email — your firm admin will be notified to reset your password.');
+    if (!email) return;
+    try {
+      await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+    } catch (err) { /* still show the same message either way */ }
+    alert("If that email has an account, your firm admin can reset your password from User Management. There's no automated email reset in this environment yet.");
+  });
+
+  document.getElementById('ssoButton').addEventListener('click', () => {
+    alert('Single sign-on is not configured for this account yet — sign in with your email and password.');
+  });
 })();
