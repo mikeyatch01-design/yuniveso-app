@@ -12,6 +12,10 @@ const documentRoutes = require('./routes/documents');
 
 const app = express();
 
+// Baseline hardening at the app level. This is NOT a substitute for a
+// real WAF/CDN (Cloudflare) in front of the app in production — see
+// SECURITY.md — but it covers what's actually the app's own job:
+// sane security headers, and blunting brute-force/scraping traffic.
 app.use(helmet());
 app.use(rateLimit({ windowMs: 60 * 1000, limit: 120 })); // 120 req/min/IP, global backstop
 
@@ -21,6 +25,13 @@ app.use(readSession);
 
 app.get('/healthz', (req, res) => res.json({ ok: true }));
 
+// One-time database setup, triggered by visiting a URL instead of needing
+// a terminal/CLI — guarded by the same JWT_SECRET so it can't be run by a
+// stranger who finds the URL. Registered BEFORE the auth-required API
+// routes below, since those routes reject every request with no session
+// (including this one) via their own router.use(requireAuth) — Express
+// matches routes in registration order, so this has to come first to
+// actually be reachable.
 app.get('/api/setup/seed', async (req, res) => {
   if (!process.env.JWT_SECRET || req.query.key !== process.env.JWT_SECRET) {
     return res.status(403).json({ error: 'Forbidden.' });
@@ -41,6 +52,7 @@ app.use('/api', apiRoutes);
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Anything else under /api that didn't match is a real 404, not the SPA fallback.
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
 
 app.use((err, req, res, next) => {
