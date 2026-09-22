@@ -63,7 +63,8 @@ h1,h2,h3,h4{font-family:'Manrope',sans-serif;margin:0;color:var(--text);letter-s
    overflow:hidden clip the trailing label text — the icon (first in the
    flex row) is always what's left visible. */
 .sidebar.collapsed{width:76px;flex:0 0 76px;overflow-x:hidden}
-.sidebar.collapsed .nav-item{overflow:hidden;white-space:nowrap}
+.sidebar.collapsed .nav-item{justify-content:center}
+.sidebar.collapsed .nav-label,
 .sidebar.collapsed .nav-section-title,
 .sidebar.collapsed .nav-badge,
 .sidebar.collapsed .sidebar-brand>div,
