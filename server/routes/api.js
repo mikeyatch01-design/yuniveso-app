@@ -98,9 +98,21 @@ router.get('/dashboard', async (req, res) => {
   res.json({ kpis: { requested: docsRequested.n, submitted: docsSubmitted.n, reports: reportsCount.n }, audits });
 });
 
-// ---------- Organizations (super admin only) ----------
-router.get('/organizations', requireRole('super_admin'), async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM organizations ORDER BY created_at DESC');
+// ---------- Organizations ----------
+// Super Admin sees every org; Admin gets back just their own (a single-item
+// list, so the frontend can use the same call either way).
+router.get('/organizations', requireRole('super_admin', 'admin'), async (req, res) => {
+  let sql = `
+    SELECT o.*,
+      (SELECT u.name FROM users u WHERE u.org_id=o.id AND u.role='admin' ORDER BY u.created_at LIMIT 1) admin_name,
+      (SELECT u.email FROM users u WHERE u.org_id=o.id AND u.role='admin' ORDER BY u.created_at LIMIT 1) admin_email,
+      (SELECT COUNT(*) FROM clients c WHERE c.org_id=o.id) clients,
+      (SELECT COUNT(*) FROM audits a WHERE a.org_id=o.id) audits
+    FROM organizations o`;
+  const params = [];
+  if (req.user.role === 'admin') { sql += ' WHERE o.id = ?'; params.push(req.user.org_id); }
+  sql += ' ORDER BY o.created_at DESC';
+  const [rows] = await pool.query(sql, params);
   res.json({ organizations: rows });
 });
 

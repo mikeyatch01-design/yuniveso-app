@@ -9,6 +9,7 @@ const { readSession } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 const documentRoutes = require('./routes/documents');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.get('/api/setup/seed', async (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api', adminRoutes);
 app.use('/api', apiRoutes);
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
