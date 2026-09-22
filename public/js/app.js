@@ -24,6 +24,22 @@
   });
 })();
 
+// ---------- Sidebar collapse ----------
+// Same pattern as the theme toggle: applied on DOMContentLoaded (not
+// gated behind requireSession), persisted per browser via localStorage.
+(function initSidebarCollapse() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.querySelector('.sidebar');
+    const btn = document.getElementById('sidebarCollapseBtn');
+    if (!sidebar || !btn) return;
+    if (localStorage.getItem('yuniveso_sidebar_collapsed') === '1') sidebar.classList.add('collapsed');
+    btn.addEventListener('click', () => {
+      const collapsed = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('yuniveso_sidebar_collapsed', collapsed ? '1' : '0');
+    });
+  });
+})();
+
 const ROLE_HOME = {
   super_admin: '/super-admin.html',
   admin: '/admin-dashboard.html',
