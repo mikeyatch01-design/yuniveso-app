@@ -5,6 +5,22 @@
 // session cookie and re-scopes every query to that user's role, so this
 // guard existing or not never changes what data is actually reachable.
 
+// ---------- Web fonts (non-blocking) ----------
+// A <link rel="stylesheet"> to Google Fonts sitting in <head> is
+// render-blocking: browsers hold the ENTIRE first paint — including this
+// page's own already-downloaded theme.css — until every stylesheet in
+// <head> resolves. On a slow or dropped connection that means a fully
+// unstyled page (huge raw icons, default blue links) instead of a slightly
+// late web font. Injecting the link from script sidesteps that: this runs
+// after the browser has already painted with the fallback font, so a slow
+// or failed font fetch degrades to "system font" instead of "no page".
+(function loadWebFonts() {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap';
+  document.head.appendChild(link);
+})();
+
 // ---------- Theme (dark/light) ----------
 // Applied immediately, outside requireSession, so there's no flash of the
 // wrong theme while the session check is still in flight. Persisted per
@@ -37,6 +53,31 @@
       const collapsed = sidebar.classList.toggle('collapsed');
       localStorage.setItem('yuniveso_sidebar_collapsed', collapsed ? '1' : '0');
     });
+  });
+})();
+
+// ---------- Mobile off-canvas sidebar ----------
+// Below the 960px breakpoint the sidebar becomes a drawer (see theme.css);
+// this just opens/closes it. Not gated behind requireSession so the drawer
+// works even while that check is in flight.
+(function initMobileSidebar() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    if (!sidebar || !overlay || !menuBtn) return;
+
+    const close = () => {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('show');
+    };
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.add('mobile-open');
+      overlay.classList.add('show');
+    });
+    overlay.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 960) close(); });
   });
 })();
 

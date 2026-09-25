@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <title>Login — YUNIVESO</title>
-<link rel="stylesheet" href="theme.css?v=8">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css?v=9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
   body{margin:0;background:#EEF1F6;font-family:'Source Sans 3',sans-serif}
   a{color:#2456C7;text-decoration:none}
@@ -14,12 +15,88 @@
   .lg-input{width:100%;height:46px;border-radius:10px;border:1.5px solid #E3E6EC;background:#fff;padding:0 14px 0 42px;font-size:14px;font-family:'Source Sans 3',sans-serif;color:#1B1F27;}
   .lg-input:focus{outline:none;border-color:#2456C7;}
   .svc-tag{background:rgba(91,141,239,0.14);border:1px solid rgba(91,141,239,0.32);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;color:#C7D4F5;letter-spacing:.01em;}
+
+  /* The panel below was exported at a fixed 1440x900 canvas, same as every
+     other page (see theme.css's .app-shell comment) — this is the actual
+     size on a real screen: fluid width, full viewport height, and the
+     decorative brand panel drops away once there's no room for it. */
+  .login-shell{width:100%!important;min-height:100vh}
+  @media (max-width:1100px){
+    .login-brand-panel{display:none!important}
+  }
+  @media (max-width:480px){
+    .login-card{padding:32px 24px!important;border-radius:16px!important}
+  }
+
+  /* ---------- Brand panel motion ---------- */
+  /* Two threads: a one-time entrance that stages the panel's own hierarchy
+     (mark, status, headline, copy, tags, footer — in that reading order),
+     and a quiet continuous life in the background (a slow gradient drift,
+     and a "radar ping" reading off the panel's own network-node graphic —
+     it embodies "real-time visibility across every engagement", the line
+     sitting right next to it, rather than decorating for its own sake). */
+  @media (prefers-reduced-motion: no-preference){
+    @keyframes meshDriftA{0%,100%{transform:translate(0,0)}50%{transform:translate(-16px,12px)}}
+    @keyframes meshDriftB{0%,100%{transform:translate(0,0)}50%{transform:translate(14px,-18px)}}
+    @keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.45}}
+    @keyframes revealUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    .mesh-a{animation:meshDriftA 22s ease-in-out infinite}
+    .mesh-b{animation:meshDriftB 27s ease-in-out infinite}
+    .status-dot{animation:statusPulse 2.2s ease-in-out infinite}
+
+    /* ---------- Orbital system ---------- */
+    /* The central node = the platform; each ring = one line of service
+       orbiting it continuously (Financial Statement Audits, Tax
+       Consultancy... the same five named in the tags below) — closer
+       rings orbit faster, same visual logic as real orbital mechanics.
+       transform-origin is in SVG user-space units (the sun's own cx/cy),
+       not CSS pixels. */
+    @keyframes orbitSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes orbitSpinReverse{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}
+    @keyframes sunPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.82}}
+    @keyframes twinkle{0%,100%{opacity:.25}50%{opacity:.8}}
+
+    .orbit-1{transform-origin:410px 330px;animation:orbitSpin 12s linear infinite}
+    .orbit-2{transform-origin:410px 330px;animation:orbitSpinReverse 20s linear infinite}
+    .orbit-3{transform-origin:410px 330px;animation:orbitSpin 30s linear infinite}
+    .orbit-4{transform-origin:410px 330px;animation:orbitSpinReverse 42s linear infinite}
+    .sun-core{transform-origin:410px 330px;animation:sunPulse 3.4s ease-in-out infinite}
+    .star{animation:twinkle 3.5s ease-in-out infinite}
+    .star:nth-of-type(2n){animation-delay:1.1s}
+    .star:nth-of-type(3n){animation-delay:2.1s}
+
+    /* Passing star: streaks across the lower panel, then a long pause
+       before the next one — an occasional event, not a constant loop. */
+    @keyframes shootingStar{
+      0%,8%{transform:translate(60px,760px);opacity:0}
+      11%{opacity:1}
+      26%{transform:translate(420px,830px);opacity:0}
+      100%{transform:translate(420px,830px);opacity:0}
+    }
+    .shooting-star{animation:shootingStar 8s cubic-bezier(.3,0,.7,1) infinite;animation-delay:2.5s}
+
+    .reveal{opacity:0;animation:revealUp 620ms cubic-bezier(.16,1,.3,1) forwards}
+    .reveal-1{animation-delay:60ms}
+    .reveal-2{animation-delay:170ms}
+    .reveal-3{animation-delay:270ms}
+    .reveal-4{animation-delay:370ms}
+    .reveal-5{animation-delay:460ms}
+    .reveal-6{animation-delay:550ms}
+    .login-card.reveal{animation-duration:500ms;animation-delay:90ms}
+  }
+  /* Reduced motion: everything present immediately, no movement — the loops
+     above simply never get defined in that case since they're scoped inside
+     the media query, so nothing here needs an explicit override. */
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1}
+  }
 </style>
 </head>
 <body>
-<div style="width:1440px;height:900px;display:flex;overflow:hidden;background:#EEF1F6;">
+<div class="login-shell" style="display:flex;overflow:hidden;background:#EEF1F6;">
 
-  <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:#EEF1F6;">
+  <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:#EEF1F6;padding:32px 20px;">
 
     <svg width="220" height="220" style="position:absolute;top:0;right:0;opacity:0.6;" viewBox="0 0 220 220">
       <g fill="#C9D2E4">
@@ -29,7 +106,7 @@
       </g>
     </svg>
 
-    <div style="width:420px;background:#fff;border-radius:20px;padding:44px 40px;box-shadow:0 24px 60px -20px rgba(18,22,34,0.22), 0 2px 8px rgba(18,22,34,0.06);border:1px solid #EDEFF3;position:relative;">
+    <div class="login-card reveal" style="width:100%;max-width:420px;background:#fff;border-radius:20px;padding:44px 40px;box-shadow:0 24px 60px -20px rgba(18,22,34,0.22), 0 2px 8px rgba(18,22,34,0.06);position:relative;">
 
       <div style="display:inline-flex;align-items:center;gap:6px;background:#EAF0FE;border-radius:20px;padding:5px 12px;margin-bottom:18px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#2456C7" stroke-width="2"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#2456C7" stroke-width="2"></path></svg>
@@ -72,7 +149,7 @@
 
         <div style="display:flex;align-items:center;gap:12px;margin:2px 0;">
           <div style="flex:1;height:1px;background:#E3E6EC;"></div>
-          <div style="font-size:12px;color:#8992A3;">or continue with</div>
+          <div style="font-size:12px;color:#6B7485;">or continue with</div>
           <div style="flex:1;height:1px;background:#E3E6EC;"></div>
         </div>
 
@@ -82,41 +159,79 @@
         </button>
 
         <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding-top:16px;border-top:1px solid #E3E6EC;margin-top:6px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#8992A3" stroke-width="1.7"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#8992A3" stroke-width="1.7"></path></svg>
-          <span style="font-size:12.5px;color:#8992A3;">Two-factor authentication required at sign-in</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#6B7485" stroke-width="1.7"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="#6B7485" stroke-width="1.7"></path></svg>
+          <span style="font-size:12.5px;color:#6B7485;">Two-factor authentication required at sign-in</span>
         </div>
       </div>
     </div>
-  </div><div style="flex:0 0 600px;position:relative;background:#0C1220;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:52px 56px;">
+  </div><div class="login-brand-panel" style="flex:0 0 600px;position:relative;background:radial-gradient(ellipse 140% 90% at 10% -10%,#141B3D 0%,#0A0D1C 55%,#070911 100%);overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:52px 56px;">
 
-    <svg width="100%" height="100%" viewBox="0 0 600 900" style="position: absolute; inset: 0; opacity: 0.9; left: -2px" preserveAspectRatio="none">
+    <svg width="100%" height="100%" viewBox="0 0 600 900" style="position: absolute; inset: 0; opacity: 0.95; left: -2px" preserveAspectRatio="none">
       <defs>
-        <radialGradient id="g1" cx="20%" cy="10%" r="60%"><stop offset="0%" stop-color="#2456C7" stop-opacity="0.55"></stop><stop offset="100%" stop-color="#2456C7" stop-opacity="0"></stop></radialGradient>
-        <radialGradient id="g2" cx="90%" cy="95%" r="55%"><stop offset="0%" stop-color="#5B8DEF" stop-opacity="0.35"></stop><stop offset="100%" stop-color="#5B8DEF" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="g1" cx="20%" cy="10%" r="60%"><stop offset="0%" stop-color="#2456C7" stop-opacity="0.6"></stop><stop offset="100%" stop-color="#2456C7" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="g2" cx="90%" cy="95%" r="55%"><stop offset="0%" stop-color="#7C5CFF" stop-opacity="0.4"></stop><stop offset="100%" stop-color="#7C5CFF" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#9DB4FF" stop-opacity="0.9"></stop><stop offset="45%" stop-color="#6B7FE8" stop-opacity="0.25"></stop><stop offset="100%" stop-color="#6B7FE8" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="galaxy1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#B37CFF" stop-opacity="0.35"></stop><stop offset="55%" stop-color="#6B4FD6" stop-opacity="0.12"></stop><stop offset="100%" stop-color="#6B4FD6" stop-opacity="0"></stop></radialGradient>
+        <radialGradient id="galaxy2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#5FC9E8" stop-opacity="0.3"></stop><stop offset="55%" stop-color="#2E7FB8" stop-opacity="0.1"></stop><stop offset="100%" stop-color="#2E7FB8" stop-opacity="0"></stop></radialGradient>
+        <linearGradient id="starTrail" x1="0" y1="0" x2="-50" y2="-15" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F2F5FF" stop-opacity="0.95"></stop><stop offset="100%" stop-color="#F2F5FF" stop-opacity="0"></stop></linearGradient>
       </defs>
-      <rect width="600" height="900" fill="url(#g1)"></rect>
-      <rect width="600" height="900" fill="url(#g2)"></rect>
-      <g stroke="#2C58B0" stroke-width="1" opacity="0.35" fill="none">
-        <circle cx="470" cy="150" r="40"></circle>
-        <circle cx="470" cy="150" r="80"></circle>
-        <circle cx="470" cy="150" r="122"></circle>
+      <g class="mesh-a"><rect width="600" height="900" fill="url(#g1)"></rect></g>
+      <g class="mesh-b"><rect width="600" height="900" fill="url(#g2)"></rect></g>
+
+      <!-- two static, distant galaxies — no animation, just fixed set dressing -->
+      <g opacity="0.85">
+        <ellipse cx="95" cy="790" rx="130" ry="58" fill="url(#galaxy1)" transform="rotate(-18 95 790)"></ellipse>
+        <ellipse cx="95" cy="790" rx="95" ry="28" fill="none" stroke="#B37CFF" stroke-width="1" opacity="0.3" transform="rotate(-18 95 790)"></ellipse>
+        <ellipse cx="95" cy="790" rx="58" ry="14" fill="none" stroke="#D3B8FF" stroke-width="1" opacity="0.25" transform="rotate(-18 95 790)"></ellipse>
       </g>
-      <circle cx="470" cy="150" r="5" fill="#5B8DEF"></circle>
-      <g stroke="#28345A" stroke-width="1" opacity="0.6">
-        <line x1="0" y1="620" x2="600" y2="560"></line>
-        <line x1="0" y1="670" x2="600" y2="610"></line>
-        <line x1="0" y1="720" x2="600" y2="660"></line>
+      <g opacity="0.75">
+        <ellipse cx="550" cy="105" rx="80" ry="36" fill="url(#galaxy2)" transform="rotate(16 550 105)"></ellipse>
+        <ellipse cx="550" cy="105" rx="54" ry="17" fill="none" stroke="#8FE0F5" stroke-width="1" opacity="0.28" transform="rotate(16 550 105)"></ellipse>
       </g>
-      <g fill="#3868D6" opacity="0.5">
-        <circle cx="70" cy="640" r="3"></circle>
-        <circle cx="230" cy="600" r="3"></circle>
-        <circle cx="390" cy="628" r="3"></circle>
-        <circle cx="540" cy="580" r="3"></circle>
+
+      <!-- distant stars, scattered, very subtle -->
+      <g fill="#C7D4F5">
+        <circle class="star" cx="60" cy="90" r="1.4" opacity=".4"></circle>
+        <circle class="star" cx="540" cy="60" r="1.6" opacity=".5"></circle>
+        <circle class="star" cx="150" cy="470" r="1.3" opacity=".35"></circle>
+        <circle class="star" cx="560" cy="440" r="1.5" opacity=".4"></circle>
+        <circle class="star" cx="90" cy="700" r="1.4" opacity=".4"></circle>
+        <circle class="star" cx="30" cy="330" r="1.2" opacity=".3"></circle>
+        <circle class="star" cx="230" cy="120" r="1.3" opacity=".35"></circle>
+      </g>
+
+      <!-- orbital system: the platform at the center, one ring per service
+           line named in the tags below — closer rings move faster. -->
+      <g stroke="#454E93" stroke-width="1" stroke-dasharray="1.5 6" fill="none" opacity=".55">
+        <circle cx="410" cy="330" r="68"></circle>
+        <circle cx="410" cy="330" r="118"></circle>
+        <circle cx="410" cy="330" r="172"></circle>
+        <circle cx="410" cy="330" r="230"></circle>
+      </g>
+
+      <circle cx="410" cy="330" r="30" fill="url(#sunGlow)"></circle>
+      <circle class="sun-core" cx="410" cy="330" r="6" fill="#B9C7FF"></circle>
+
+      <g class="orbit-1"><circle cx="478" cy="330" r="7" fill="#8DA1FF" opacity=".2"></circle><circle cx="478" cy="330" r="3.5" fill="#C4D0FF"></circle></g>
+      <g class="orbit-2"><circle cx="528" cy="330" r="8" fill="#7C5CFF" opacity=".2"></circle><circle cx="528" cy="330" r="4" fill="#A98BFF"></circle></g>
+      <g class="orbit-3"><circle cx="582" cy="330" r="7" fill="#5B8DEF" opacity=".2"></circle><circle cx="582" cy="330" r="3.5" fill="#8FB0FF"></circle></g>
+      <g class="orbit-4"><circle cx="640" cy="330" r="9" fill="#6B7FE8" opacity=".2"></circle><circle cx="640" cy="330" r="4.5" fill="#9DAEF5"></circle></g>
+
+      <g stroke="#2A2F5A" stroke-width="1" opacity="0.5">
+        <line x1="0" y1="700" x2="600" y2="650"></line>
+        <line x1="0" y1="750" x2="600" y2="700"></line>
+      </g>
+
+      <!-- a star passing through, low in the panel — streaks across every
+           few seconds, then a long quiet pause before the next pass -->
+      <g class="shooting-star">
+        <line x1="0" y1="0" x2="-50" y2="-15" stroke="url(#starTrail)" stroke-width="2" stroke-linecap="round"></line>
+        <circle cx="0" cy="0" r="2.4" fill="#F2F5FF"></circle>
       </g>
     </svg>
 
-    <div style="position:relative;display:flex;align-items:center;gap:12px;">
-      <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#2456C7,#6EA0FF);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(36,86,199,0.5);">
+    <div class="reveal reveal-1" style="position:relative;display:flex;align-items:center;gap:12px;">
+      <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#2456C7,#7C5CFF);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,0.35);">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 15c4-6 12-6 16 0M7.2 18c2.4-3 7.2-3 9.6 0M11 21h2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="12" cy="6.5" r="2.2" fill="#fff"></circle></svg>
       </div>
       <div>
@@ -126,15 +241,15 @@
     </div>
 
     <div style="position:relative;">
-      <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(91,141,239,0.14);border:1px solid rgba(91,141,239,0.35);border-radius:20px;padding:5px 12px;margin-bottom:20px;">
-        <span style="width:6px;height:6px;border-radius:50%;background:#5FE0A5;"></span>
+      <div class="reveal reveal-2" style="display:inline-flex;align-items:center;gap:7px;background:rgba(124,92,255,0.14);border:1px solid rgba(124,92,255,0.35);border-radius:20px;padding:5px 12px;margin-bottom:20px;">
+        <span class="status-dot" style="width:6px;height:6px;border-radius:50%;background:#5FE0A5;"></span>
         <span style="font-size:11.5px;color:#C7D4F5;font-weight:600;">All systems operational</span>
       </div>
 
-      <div style="font-family:'Manrope',sans-serif;font-weight:800;font-size:32px;line-height:1.22;color:#fff;max-width:460px;">Engagement management, built for the standard of care your clients expect.</div>
-      <div style="font-size:13.5px;color:#9AA6C4;margin-top:14px;max-width:440px;line-height:1.6;">Plan, execute and report on audits end-to-end — with role-based access, complete audit trails and real-time visibility across every engagement.</div>
+      <div class="reveal reveal-3" style="font-family:'Manrope',sans-serif;font-weight:800;font-size:32px;line-height:1.22;color:#fff;max-width:460px;">Engagement management, built for the standard of care your clients expect.</div>
+      <div class="reveal reveal-4" style="font-size:13.5px;color:#9AA6C4;margin-top:14px;max-width:440px;line-height:1.6;">Plan, execute and report on audits end-to-end — with role-based access, complete audit trails and real-time visibility across every engagement.</div>
 
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;max-width:460px;">
+      <div class="reveal reveal-5" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;max-width:460px;">
         <span class="svc-tag">Financial Statement Audits</span>
         <span class="svc-tag">Tax Consultancy</span>
         <span class="svc-tag">Internal Controls Review</span>
@@ -142,7 +257,7 @@
         <span class="svc-tag">Risk Advisory</span>
       </div>
 
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid #232B45;display:flex;flex-direction:column;gap:11px;">
+      <div class="reveal reveal-6" style="margin-top:24px;padding-top:20px;border-top:1px solid #232B45;display:flex;flex-direction:column;gap:11px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:0 0 15px;"><path d="M4 6h16v12H4z" stroke="#7C8FC2" stroke-width="1.7" stroke-linejoin="round"></path><path d="m4 7 8 6 8-6" stroke="#7C8FC2" stroke-width="1.7" stroke-linejoin="round"></path></svg>
           <span style="font-size:13px;color:#C2CBE3;">support@yuniveso.com</span>
@@ -150,10 +265,10 @@
       </div>
     </div>
 
-    <div style="position:relative;font-size:12px;color:#606C90;">© 2026 YUNIVESO. All rights reserved.</div>
+    <div class="reveal reveal-6" style="position:relative;font-size:12px;color:#7E8AAE;">© 2026 YUNIVESO. All rights reserved.</div>
   </div>
 
 </div>
-<script src="js/login.js?v=3"></script>
+<script src="js/login.js?v=4"></script>
 </body>
 </html>

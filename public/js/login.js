@@ -1,3 +1,14 @@
+// A stylesheet <link> to Google Fonts in <head> is render-blocking — the
+// browser holds first paint (including this page's own already-downloaded
+// CSS) until it resolves. Injecting it from script means a slow/failed
+// font fetch degrades to "system font", not "unstyled page". See app.js.
+(function loadWebFonts() {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap';
+  document.head.appendChild(link);
+})();
+
 (function () {
   const btn = document.getElementById('signInBtn');
   const emailEl = document.getElementById('email');

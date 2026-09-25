@@ -1,5 +1,12 @@
 require('dotenv').config();
 const express = require('express');
+// Express 4 doesn't forward a rejected promise from an `async (req, res)`
+// route handler to the error-handling middleware — it becomes an
+// unhandled rejection, which crashes the ENTIRE process (every request,
+// every logged-in user) instead of just failing the one request that hit
+// a bad query. This patches Express's router so that's no longer possible;
+// it must be required after 'express' but before any route file runs.
+require('express-async-errors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -17,7 +24,24 @@ const app = express();
 // real WAF/CDN (Cloudflare) in front of the app in production — see
 // SECURITY.md — but it covers what's actually the app's own job:
 // sane security headers, and blunting brute-force/scraping traffic.
-app.use(helmet());
+//
+// upgrade-insecure-requests is dropped from helmet's defaults: it tells
+// the browser to silently rewrite every http:// sub-resource request (css,
+// js, fonts) to https:// first. Every URL this app loads is relative/
+// same-origin, so it buys nothing in production (Railway already only
+// serves the public domain over https) — but it actively breaks local
+// development, where this server only speaks plain http. Safari enforces
+// it strictly and just drops the request, which silently kills the page's
+// own stylesheet with no visible error; Chromium browsers are laxer about
+// it on localhost, which is why this only ever showed up in Safari.
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      'upgrade-insecure-requests': null,
+    },
+  },
+}));
 app.use(rateLimit({ windowMs: 60 * 1000, limit: 120 })); // 120 req/min/IP, global backstop
 
 app.use(express.json({ limit: '1mb' }));
