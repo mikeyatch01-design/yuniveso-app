@@ -14,7 +14,6 @@
   if (!org) return;
   fName.value = org.name;
   fIndustry.value = org.industry;
-  planDisplay.textContent = `${org.plan} · ${statusBadge(org.status).replace(/<[^>]+>/g, '')}`;
   planDisplay.innerHTML = `${escapeHtml(org.plan)} &middot; ${statusBadge(org.status)}`;
 
   document.getElementById('settingsForm').addEventListener('submit', async (e) => {

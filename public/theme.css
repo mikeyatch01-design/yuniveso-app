@@ -107,7 +107,6 @@ a:hover{text-decoration:underline}
 .sidebar-collapse-btn svg{width:13px;height:13px;transition:transform .18s ease}
 .sidebar.collapsed .sidebar-collapse-btn svg{transform:rotate(180deg)}
 .sidebar-brand{display:flex;align-items:center;gap:10px;padding:22px 22px 18px 22px}
-.brand-mark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--blue),#5B8DEF);flex:0 0 30px}
 
 /* ---------- Theme toggle (replaces the decorative brand-mark icon) ---------- */
 .theme-toggle-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);display:flex;align-items:center;justify-content:center;flex:0 0 36px;cursor:pointer;padding:0}
@@ -194,7 +193,6 @@ table.data tr:last-child td{border-bottom:none}
 
 /* badges */
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-2xs);font-weight:700;padding:3px 10px;border-radius:20px}
-.badge-dot{width:6px;height:6px;border-radius:50%}
 .badge-success{background:var(--success-bg);color:var(--success)}
 .badge-warning{background:var(--warning-bg);color:var(--warning)}
 .badge-critical{background:var(--critical-bg);color:var(--critical)}
@@ -218,8 +216,6 @@ table.data tr:last-child td{border-bottom:none}
 
 .stat-line{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
 .stat-line:last-child{border-bottom:none}
-
-.divider{height:1px;background:var(--border);width:100%}
 
 /* ---------- Modal ---------- */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(18,22,34,.5);z-index:50;align-items:center;justify-content:center;padding:20px}

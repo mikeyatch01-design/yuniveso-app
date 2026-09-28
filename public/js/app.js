@@ -260,7 +260,8 @@ function toggleNotifPanel(anchor, notifications) {
 function wireTableSearch(inputId, tbodyId) {
   const input = document.getElementById(inputId);
   const tbody = document.getElementById(tbodyId);
-  if (!input || !tbody) return;
+  if (!input || !tbody || input.dataset.searchWired) return;
+  input.dataset.searchWired = '1';
   input.addEventListener('input', () => {
     const q = input.value.trim().toLowerCase();
     Array.from(tbody.rows).forEach(row => {
