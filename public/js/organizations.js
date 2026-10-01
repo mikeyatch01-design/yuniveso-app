@@ -28,7 +28,7 @@
         <td><b>${escapeHtml(o.name)}</b><div class="cell-sub">${escapeHtml(o.industry || '—')} · ${o.clients} clients · ${o.audits} audits</div></td>
         <td>${o.admin_name ? `${escapeHtml(o.admin_name)}<div class="cell-sub">${escapeHtml(o.admin_email)}</div>` : '<span class="cell-sub">No admin yet</span>'}</td>
         <td>${escapeHtml(o.plan)}</td>
-        <td class="mono">$${Number(o.mrr).toLocaleString('en-US')}</td>
+        <td class="mono">TZS ${Number(o.mrr).toLocaleString('en-US')}</td>
         <td>${statusBadge(o.status)}</td>
         <td class="row-actions">
           <button type="button" class="row-icon-btn edit-org-btn" data-id="${o.id}" title="Edit">

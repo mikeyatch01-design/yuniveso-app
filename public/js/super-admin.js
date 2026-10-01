@@ -22,7 +22,7 @@
         <td>${o.admins}</td>
         <td>${o.clients}</td>
         <td>${o.active_audits}</td>
-        <td class="mono">$${Number(o.mrr).toLocaleString('en-US')}</td>
+        <td class="mono">TZS ${Number(o.mrr).toLocaleString('en-US')}</td>
         <td>${statusBadge(o.status)}</td>
       </tr>
     `).join('');
