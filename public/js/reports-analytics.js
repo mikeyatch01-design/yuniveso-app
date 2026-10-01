@@ -11,7 +11,7 @@
     document.getElementById('deptBars').innerHTML = findings_by_department.length ? findings_by_department.map(d => `
       <div class="bar-row">
         <span style="width:130px;font-size:12.5px;color:#5B6472;">${escapeHtml(d.department || 'Unspecified')}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((d.n / maxDept) * 100)}%;background:#2456C7;"></div></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((d.n / maxDept) * 100)}%;background:#0066FF;"></div></div>
         <span style="font-size:12px;font-weight:700;width:16px;">${d.n}</span>
       </div>
     `).join('') : `<div class="cell-sub">No findings logged yet.</div>`;

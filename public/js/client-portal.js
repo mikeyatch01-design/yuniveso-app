@@ -8,9 +8,9 @@ function phaseStepperHtml(currentPhase) {
     const circleStyle = done
       ? 'background:#1A8754;color:#fff;'
       : active
-      ? 'background:#2456C7;color:#fff;font-weight:800;font-size:12px;font-family:\'Manrope\',sans-serif;'
+      ? 'background:#0066FF;color:#fff;font-weight:800;font-size:12px;font-family:\'Manrope\',sans-serif;'
       : 'background:#F5F6F9;color:#8992A3;font-weight:800;font-size:12px;font-family:\'Manrope\',sans-serif;';
-    const labelStyle = active ? 'font-size:11.5px;font-weight:700;color:#2456C7;text-align:center;'
+    const labelStyle = active ? 'font-size:11.5px;font-weight:700;color:#0066FF;text-align:center;'
       : done ? 'font-size:11.5px;font-weight:600;text-align:center;'
       : 'font-size:11.5px;color:#8992A3;text-align:center;';
     const circle = `<div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;${circleStyle}">${done ? '✓' : i + 1}</div>`;
@@ -25,7 +25,7 @@ function reportRowHtml(doc) {
   return `
     <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #E3E6EC;border-radius:10px;">
       <div style="width:38px;height:38px;border-radius:8px;background:#EAF0FE;display:flex;align-items:center;justify-content:center;flex:0 0 38px;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="#2456C7" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="#0066FF" stroke-width="1.8" stroke-linejoin="round"/></svg>
       </div>
       <div style="flex:1;"><div style="font-size:13.5px;font-weight:700;">${escapeHtml(doc.original_filename)}</div><div class="cell-sub">${formatDate(doc.created_at.slice(0, 10))} · ${(doc.size_bytes / 1024).toFixed(0)} KB</div></div>
       <a class="btn btn-secondary" style="padding:7px 12px;" href="/api/documents/${doc.id}/download">Download</a>

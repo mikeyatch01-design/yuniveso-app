@@ -2,8 +2,12 @@
 :root{
   --navy:#12161F;
   --navy-2:#1B2130;
-  --blue:#2456C7;
-  --blue-dark:#173A85;
+  /* Brighter, more saturated blue — matches the vivid single-accent blue
+     used on lynxpay.africa (#0066FF) instead of the more muted #2456C7
+     this started as. --blue-dark is a proportionally darker shade for
+     button hover and avatar-initial text, not the old value scaled down. */
+  --blue:#0066FF;
+  --blue-dark:#003D99;
   --blue-light:#EAF0FE;
   --bg:#F5F6F9;
   --surface:#FFFFFF;
@@ -49,7 +53,7 @@
   --text:#F3F4F6;
   --text-2:#A0A7B4;
   --text-3:#7B8290;
-  --blue-light:rgba(36,86,199,0.22);
+  --blue-light:rgba(0,102,255,0.22);
   --blue-dark:#9DBBF5;
   --success-bg:rgba(26,135,84,0.18);
   --warning-bg:rgba(180,114,10,0.18);
@@ -181,7 +185,7 @@ a:hover{text-decoration:underline}
 .kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .kpi-label{font-size:var(--fs-xs);color:var(--text-2);font-weight:600}
 .kpi-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.kpi-value{font-family:'Manrope',sans-serif;font-size:var(--fs-xl);font-weight:800;line-height:1}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:var(--fs-xl);font-weight:700;line-height:1}
 .kpi-trend{font-size:var(--fs-xs);margin-top:8px;font-weight:600;display:flex;align-items:center;gap:4px}
 .trend-up{color:var(--success)}
 .trend-down{color:var(--critical)}
@@ -189,7 +193,12 @@ a:hover{text-decoration:underline}
 /* table */
 table.data{width:100%;border-collapse:collapse}
 table.data th{text-align:left;font-size:var(--fs-2xs);font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--text-3);padding:10px 16px;border-bottom:1px solid var(--border);background:var(--table-head-bg)}
-table.data td{padding:13px 16px;font-size:var(--fs-base);border-bottom:1px solid var(--border);color:var(--text)}
+/* tabular-nums: digits take equal width so any numbers in a cell line up
+   cleanly column to column, the same practical win JetBrains Mono gives
+   tables — without switching body/guest-name/status text to a monospace
+   font site-wide, which would hurt readability for everything that isn't
+   a number. */
+table.data td{padding:13px 16px;font-size:var(--fs-base);border-bottom:1px solid var(--border);color:var(--text);font-variant-numeric:tabular-nums}
 table.data tr:last-child td{border-bottom:none}
 .cell-sub{font-size:var(--fs-xs);color:var(--text-3);margin-top:2px}
 
