@@ -42,7 +42,10 @@
 :root[data-theme="dark"]{
   --bg:#0F1218;
   --surface:#171B24;
-  --border:#262B36;
+  /* Translucent white instead of a flat gray — reads as a refined hairline
+     that adapts to whatever's behind it (same idea already used for
+     --muted-bg below) rather than a hard-coded gray line. */
+  --border:rgba(255,255,255,0.09);
   --text:#F3F4F6;
   --text-2:#A0A7B4;
   --text-3:#7B8290;
